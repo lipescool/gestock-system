@@ -168,6 +168,20 @@ export interface User {
 export interface Printer {
   id: Uid;
   name: string;                  // « Caisse », « Étiquettes », « Réserve »
+  /** À quoi elle sert. Une boutique a souvent deux machines : une pour
+   *  les tickets, une pour les étiquettes de rayon. Les anciennes
+   *  fiches, créées avant cette distinction, valent « receipt ». */
+  usage?: 'receipt' | 'label';
+  /** Étiqueteuses seulement : le format de planche qu'elles reçoivent,
+   *  une clé de SHEET_FORMATS. Une étiqueteuse n'a pas de « largeur de
+   *  ticket » : elle a une taille d'étiquette, qui peut être A4. */
+  labelFormat?: string;
+  /** Étiqueteuses seulement : combien d'exemplaires par produit. */
+  labelCopies?: number;
+  /** Langage de l'imprimante. ESC/POS commande un rouleau qui défile,
+   *  TSPL décrit une vignette de taille connue — une étiqueteuse ne
+   *  comprend pas l'ESC/POS, et inversement. */
+  langage?: 'escpos' | 'tspl';
   transport: 'relay' | 'bluetooth' | 'usb' | 'network' | 'browser';
   width: 58 | 80;
   /** Bluetooth : identifiant renvoyé par le navigateur, pour reconnecter

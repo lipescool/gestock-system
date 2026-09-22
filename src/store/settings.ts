@@ -16,6 +16,17 @@ export interface AppSettings {
   autoBackupEnabled: boolean;
   autoBackupTime: string;   // 'HH:mm'
   printTransport: 'relay' | 'bluetooth' | 'usb' | 'network' | 'browser';
+  /* --- Étiquettes de produits --- */
+  /** Format de planche : une clé de SHEET_FORMATS. */
+  labelFormat: string;
+  /** Imprimante visée : celle des tickets, ou une autre. */
+  labelPrinter: string;
+  /** Combien d'étiquettes par produit, par défaut. */
+  labelCopies: number;
+  /** Ce qui figure sur l'étiquette, en plus du code-barres. */
+  labelShowName: boolean;
+  labelShowPrice: boolean;
+
   /** Apparence : palette, clair ou sombre, angle des coins. */
   skin: SkinId;
   themeMode: ThemeMode;
@@ -38,6 +49,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   autoBackupEnabled: true,
   autoBackupTime: '22:00',
   printTransport: 'bluetooth',
+  labelFormat: '58x40',
+  labelPrinter: '',
+  labelCopies: 1,
+  labelShowName: true,
+  labelShowPrice: true,
+
   skin: 'emeraude',
   themeMode: 'auto',
   corners: 'normal',

@@ -4,7 +4,9 @@ import { db, uid, now, EMPTY, EMPTY_MAP } from '../db';
 import { applyStockMovement, logAudit } from '../db/audit';
 import { useSettings } from '../store/settings';
 import { parseMoney } from '../i18n/currencies';
-import { generateInternalBarcode, buildLabelSheetHtml } from '../lib/barcode';
+import { generateInternalBarcode, buildLabelSheetHtml, SHEET_FORMATS } from '../lib/barcode';
+import { printer } from '../print/service';
+import { REGLAGES_PAR_DEFAUT } from '../print/tspl';
 import { CategoryIconSvg } from '../lib/categoryIcons';
 import CategoriesPanel from '../components/CategoriesPanel';
 import { Icon } from '../lib/icons';
@@ -124,13 +126,66 @@ export default function Stock() {
     setSelected(next);
   };
 
-  const printLabels = () => {
-    const items = products
-      .filter((p) => selected.has(p.id) && p.barcode)
-      .map((p) => ({ name: p.name, barcode: p.barcode!, price: money(p.price), qty: 1 }));
-    if (!items.length) return;
+  /**
+   * Imprime les étiquettes des produits cochés.
+   *
+   * Trois chemins selon la machine : l'étiqueteuse enregistrée reçoit
+   * son propre langage, et à défaut on passe par le dialogue du
+   * navigateur, qui marche partout.
+   */
+  const printLabels = async () => {
+    const vises = products.filter((p) => selected.has(p.id) && p.barcode);
+    if (!vises.length) return;
 
-    const html = buildLabelSheetHtml(items, settings.printWidth === 80 ? '80x80' : '58x40');
+    const fmtCle = settings.labelFormat in SHEET_FORMATS
+      ? settings.labelFormat : '58x40';
+    const fmt = SHEET_FORMATS[fmtCle];
+
+    /* L'étiqueteuse enregistrée, si le commerçant en a déclaré une
+       dans les réglages. */
+    const machine = settings.labelPrinter
+      ? await db.printers.get(settings.labelPrinter)
+      : undefined;
+
+    if (machine && machine.transport !== 'browser') {
+      try {
+        await printer.use(machine.transport, {
+          address: machine.address, relay: machine.relay,
+        });
+        if (!printer.isConnected()) await printer.connect();
+
+        await printer.printLabels(
+          vises.map((p) => ({
+            nom: p.name, codeBarres: p.barcode!, prix: money(p.price),
+            exemplaires: settings.labelCopies,
+          })),
+          machine.langage ?? 'escpos',
+          {
+            ...REGLAGES_PAR_DEFAUT,
+            largeurMm: fmt.paper.w,
+            hauteurMm: fmt.paper.h,
+            colonnes: fmt.grid.cols,
+            rangees: fmt.grid.rows,
+            gapMm: fmt.paper.w <= 60 ? 0 : 2,
+          },
+          { avecNom: settings.labelShowName, avecPrix: settings.labelShowPrice },
+        );
+        setSelected(new Set());
+        return;
+      } catch {
+        /* L'étiqueteuse n'a pas répondu : plutôt que de laisser le
+           commerçant sans étiquettes, on retombe sur le dialogue. */
+      }
+    }
+
+    const html = buildLabelSheetHtml(
+      vises.map((p) => ({
+        name: p.name, barcode: p.barcode!, price: money(p.price),
+        qty: settings.labelCopies,
+      })),
+      fmtCle,
+      { showName: settings.labelShowName, showPrice: settings.labelShowPrice },
+    );
     const frame = document.createElement('iframe');
     frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
     document.body.appendChild(frame);
@@ -162,7 +217,7 @@ export default function Stock() {
                      placeholder={t('pos.search')} />
             </div>
             {selected.size > 0 && (
-              <button className="btn ghost" onClick={printLabels}>
+              <button className="btn ghost" onClick={() => void printLabels()}>
                 <Icon name="tag" size={15} /> {t('stock.printLabels')} ({selected.size})
               </button>
             )}
@@ -213,7 +268,7 @@ export default function Stock() {
               { value: '', label: t('stock.allCategories') },
               { value: 'none', label: t('common.none') },
               ...categories.map((c) => ({
-                value: c.id, label: c.name,
+                value: c.id, label: c.name.toUpperCase(),
                 prefix: <CategoryIconSvg id={c.icon} size={16} />,
               })),
             ]}
@@ -313,7 +368,7 @@ export default function Stock() {
                       const c = categories.find((x) => x.id === p.categoryId);
                       return c ? (
                         <span className="cat-inline">
-                          <CategoryIconSvg id={c.icon} size={15} /> {c.name}
+                          <CategoryIconSvg id={c.icon} size={15} /> {c.name.toUpperCase()}
                         </span>
                       ) : <span className="dimmed">{t('common.none')}</span>;
                     })()}
@@ -540,7 +595,7 @@ function ProductDialog({ product, categories, onClose }:
                 { value: '', label: t('common.none') },
                 ...categories.map((c) => ({
                   value: c.id,
-                  label: c.name,
+                  label: c.name.toUpperCase(),
                   prefix: <CategoryIconSvg id={c.icon} size={17} />,
                 })),
               ]}

@@ -12,6 +12,7 @@ import { Icon, type IconName } from '../lib/icons';
 import { PayIcon, PAY_ICONS } from '../lib/payIcons';
 import Select from '../components/Select';
 import ConfirmDialog, { useConfirm } from '../components/ConfirmDialog';
+import LabelSettings from './LabelSettings';
 import type { Printer as PrinterRow, User as UserRow } from '../db/schema';
 import { hashPin, hashAnswer, clearFailures, findUserByPin } from '../lib/pin';
 import { SKINS, type ThemeMode, type Corners } from '../lib/theme';
@@ -21,7 +22,7 @@ import './settings.css';
 /** Les quatre chemins vers une imprimante, plus le relais local. */
 type PrinterKind = 'relay' | 'bluetooth' | 'usb' | 'network' | 'browser';
 
-type Section = 'general' | 'appearance' | 'payments' | 'printing' | 'security' | 'backup';
+type Section = 'general' | 'appearance' | 'payments' | 'printing' | 'labels' | 'security' | 'backup';
 
 export default function Settings() {
   const { t } = useSettings();
@@ -32,6 +33,7 @@ export default function Settings() {
     { key: 'appearance', icon: 'palette' },
     { key: 'payments', icon: 'card' },
     { key: 'printing', icon: 'print' },
+    { key: 'labels', icon: 'tag' },
     { key: 'security', icon: 'lock' },
     { key: 'backup', icon: 'save' },
   ];
@@ -58,6 +60,12 @@ export default function Settings() {
           {section === 'appearance' && <Appearance />}
           {section === 'payments' && <Payments />}
           {section === 'printing' && <Printing />}
+          {/* Les étiquettes ont leur propre écran : une étiqueteuse
+              n'a pas de largeur de ticket, elle a un format de
+              planche et un nombre d'exemplaires. */}
+          {section === 'labels' && (
+            <LabelSettings Group={Group} Field={Field} Toggle={Toggle} />
+          )}
           {section === 'security' && <Security />}
           {section === 'backup' && <BackupPanel />}
         </div>
@@ -300,9 +308,15 @@ function Payments() {
 
 /* ---- Impression ---- */
 
+/** Imprimantes à tickets. Les étiqueteuses ont leur propre écran. */
 function Printing() {
   const { t, settings, set } = useSettings();
-  const printers = useLiveQuery(() => db.printers.toArray(), []) ?? EMPTY<never>();
+
+  /* Les fiches créées avant que les étiqueteuses existent n'ont pas
+     d'usage : elles comptent pour des imprimantes à tickets. */
+  const printers = useLiveQuery(
+    () => db.printers.filter((p) => (p.usage ?? 'receipt') === 'receipt').toArray(), [],
+  ) ?? EMPTY<PrinterRow>();
 
   const [status, setStatus] = useState<{ id: string; ok: boolean; msg: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -341,7 +355,11 @@ function Printing() {
 
   /** Rend cette imprimante active pour toute l'application. */
   const useThis = async (p: PrinterRow) => {
-    await db.printers.toCollection().modify({ isDefault: false });
+    /* Une seule imprimante active par usage : activer celle des
+       tickets ne doit pas désactiver l'étiqueteuse. */
+    await db.printers
+      .filter((x) => (x.usage ?? 'receipt') === 'receipt')
+      .modify({ isDefault: false });
     await db.printers.update(p.id, { isDefault: true, lastUsedAt: now(), updatedAt: now() });
     await set('printTransport', p.transport);
     await set('printWidth', p.width);
@@ -407,6 +425,7 @@ function Printing() {
     const first = printers.length === 0;
     const row: PrinterRow = {
       id, name: draft.name.trim(), transport: draft.transport, width: draft.width,
+      usage: 'receipt',
       deviceId: null, deviceName: null,
       address: draft.address.trim(), relay: draft.relay.trim(),
       isDefault: first, lastUsedAt: null, updatedAt: now(),
