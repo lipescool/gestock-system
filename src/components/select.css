@@ -1,0 +1,125 @@
+.sel {
+  position: relative;
+  width: 100%;
+}
+
+.sel-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+  text-align: left;
+}
+.sel-btn:hover:not(:disabled) { border-color: var(--text-dim); }
+.sel.open .sel-btn {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.sel.off .sel-btn { opacity: .5; cursor: not-allowed; }
+
+.sel-prefix {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.sel-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sel-label.ph { color: var(--text-dim); }
+
+.sel-arrow {
+  flex: none;
+  color: var(--text-dim);
+  transition: transform .15s;
+}
+.sel.open .sel-arrow { transform: rotate(180deg); color: var(--accent); }
+
+/* La liste est posée sur le `body`, pas dans le champ : placée dans un
+   dialogue, elle était rognée par ses bords et se fermait au moindre
+   défilement. Sa position est calculée en JavaScript. */
+.sel-list {
+  position: fixed;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .22);
+}
+
+.sel-search {
+  flex: none;
+  margin-bottom: 6px;
+  padding: 9px 14px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border-color: transparent;
+  font-weight: 500;
+}
+
+.sel-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sel-none {
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.sel-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  text-align: left;
+  font-weight: 500;
+  color: var(--text);
+  flex: none;
+}
+.sel-opt.hl { background: var(--surface-2); }
+.sel-opt.on { font-weight: 700; }
+.sel-opt.on.hl { background: var(--accent-soft); }
+
+.sel-opt-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sel-opt-label small {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.sel-check { flex: none; color: var(--accent); }
+
+@media (max-width: 560px) {
+  .sel-opt { padding: 13px 14px; }
+}

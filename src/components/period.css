@@ -1,0 +1,126 @@
+/* Filtre de période, partagé par la caisse, le tableau de bord,
+   l'historique, les dépenses et les ventes du stock.
+
+   Ces règles vivaient dans la feuille de la caisse : les autres écrans
+   ne la chargent pas, et leurs boutons de période s'affichaient sans
+   fond. Un composant partagé porte son propre style. */
+
+/* Sept périodes : elles défilent plutôt que de se replier sur deux
+   lignes, ce qui ferait sauter tout le contenu en dessous. */
+.pf-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.pf-tabs::-webkit-scrollbar { display: none; }
+
+/* Un nom propre au filtre, préfixé comme tout ce qui lui appartient :
+   `.chip` était un nom générique dans une feuille partagée, exposé à
+   heurter n'importe quel autre écran voulant des pastilles.
+
+   L'élément est nommé dans le sélecteur parce que la feuille globale
+   remet le fond des boutons à zéro et se charge après celle-ci : à
+   poids égal la dernière l'emporte, et les périodes non sélectionnées
+   perdaient leur fond. */
+button.pf-tab {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  /* Un simple contour, sans fond : le filtre est posé sur le blanc
+     d'une carte dans la caisse et sur le gris de la page ailleurs, et
+     un aplat gris se confondait avec ce dernier. Le trait donne la
+     forme sur les deux, sans alourdir le bandeau. */
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex: none;
+  transition: background .12s, color .12s;
+}
+
+button.pf-tab:hover:not(.on) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+button.pf-tab.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.pf {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pf-current {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pf-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .16);
+}
+.pf-panel label { display: block; }
+.pf-panel label span {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.pf-panel input { width: 150px; }
+
+.pf-apply {
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pf-cancel {
+  padding: 10px 14px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .pf-panel {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 70px;
+    flex-wrap: wrap;
+  }
+  .pf-panel label { flex: 1; min-width: 130px; }
+  .pf-panel input { width: 100%; }
+}

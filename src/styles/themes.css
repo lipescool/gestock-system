@@ -1,0 +1,233 @@
+/**
+ * Apparences de l'application.
+ *
+ * Chaque thème ne fait que redéfinir les variables de couleur posées
+ * dans `global.css` : aucune règle de mise en page n'est touchée, donc
+ * changer d'apparence ne peut rien casser.
+ *
+ * Deux attributs cohabitent sur la racine : `data-theme` commande le
+ * clair ou le sombre, `data-skin` la palette. Un commerçant peut ainsi
+ * choisir des couleurs chaudes en mode sombre.
+ *
+ * Le mode sombre de chaque palette est déclaré deux fois — une fois
+ * pour le réglage du système, une fois pour le choix explicite — comme
+ * le fait déjà `global.css`.
+ */
+
+/* ---- Émeraude (par défaut) ------------------------------------- */
+/* Les couleurs d'accent viennent de global.css ; le fond est déclaré
+   ici comme pour les autres, afin que les six palettes se comportent
+   de la même façon. */
+
+:root[data-skin='emeraude'] {
+  --bg: #fbfdfc;
+  --surface: #ffffff;
+  --surface-2: #eaf1ee;
+  --border: #c6d4ce;
+}
+
+:root[data-skin='emeraude']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --bg: #0b1210;
+    --surface: #141b18;
+    --surface-2: #1e2823;
+    --border: #334039;
+  }
+}
+
+:root[data-skin='emeraude'][data-theme='dark'] {
+  --bg: #0b1210;
+  --surface: #141b18;
+  --surface-2: #1e2823;
+  --border: #334039;
+}
+
+/* ---- Indigo ----------------------------------------------------- */
+
+:root[data-skin='indigo'] {
+  --accent: #3b4ea8;
+  --accent-soft: #e0e4f5;
+  --ok: #3b4ea8;
+  --bg: #fbfbfe;
+  --surface: #ffffff;
+  --surface-2: #eceef7;
+  --border: #ccd1e4;
+}
+
+:root[data-skin='indigo']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --accent: #7d8fe0;
+    --accent-soft: #1e2545;
+    --ok: #7d8fe0;
+    --bg: #0b0d16;
+    --surface: #141724;
+    --surface-2: #1e2334;
+    --border: #343b52;
+  }
+}
+
+:root[data-skin='indigo'][data-theme='dark'] {
+  --accent: #7d8fe0;
+  --accent-soft: #1e2545;
+  --ok: #7d8fe0;
+  --bg: #0b0d16;
+  --surface: #141724;
+  --surface-2: #1e2334;
+  --border: #343b52;
+}
+
+/* ---- Terre ------------------------------------------------------ */
+/* Ocre et brique : les couleurs des marchés d'Afrique de l'Ouest. */
+
+:root[data-skin='terre'] {
+  --accent: #9c4a1a;
+  --accent-soft: #f6e4d8;
+  --ok: #9c4a1a;
+  --bg: #fdfaf7;
+  --surface: #ffffff;
+  --surface-2: #f3ebe4;
+  --border: #ddcec2;
+}
+
+:root[data-skin='terre']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --accent: #e08a4f;
+    --accent-soft: #3a2115;
+    --ok: #e08a4f;
+    --bg: #14100d;
+    --surface: #1d1815;
+    --surface-2: #2a231e;
+    --border: #453a32;
+  }
+}
+
+:root[data-skin='terre'][data-theme='dark'] {
+  --accent: #e08a4f;
+  --accent-soft: #3a2115;
+  --ok: #e08a4f;
+  --bg: #14100d;
+  --surface: #1d1815;
+  --surface-2: #2a231e;
+  --border: #453a32;
+}
+
+/* ---- Océan ------------------------------------------------------ */
+
+:root[data-skin='ocean'] {
+  --accent: #0b6e8f;
+  --accent-soft: #d6ecf4;
+  --ok: #0b6e8f;
+  --bg: #fafdfe;
+  --surface: #ffffff;
+  --surface-2: #e9f1f5;
+  --border: #c3d5dd;
+}
+
+:root[data-skin='ocean']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --accent: #4bb8d8;
+    --accent-soft: #0e2f3c;
+    --ok: #4bb8d8;
+    --bg: #0a1216;
+    --surface: #121d23;
+    --surface-2: #1b2b33;
+    --border: #2f454f;
+  }
+}
+
+:root[data-skin='ocean'][data-theme='dark'] {
+  --accent: #4bb8d8;
+  --accent-soft: #0e2f3c;
+  --ok: #4bb8d8;
+  --bg: #0a1216;
+  --surface: #121d23;
+  --surface-2: #1b2b33;
+  --border: #2f454f;
+}
+
+/* ---- Prune ------------------------------------------------------ */
+
+:root[data-skin='prune'] {
+  --accent: #7a3572;
+  --accent-soft: #f0e2ee;
+  --ok: #7a3572;
+  --bg: #fefbfd;
+  --surface: #ffffff;
+  --surface-2: #f3ecf2;
+  --border: #dccdd9;
+}
+
+:root[data-skin='prune']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --accent: #c983bd;
+    --accent-soft: #331a30;
+    --ok: #c983bd;
+    --bg: #120d11;
+    --surface: #1b151a;
+    --surface-2: #261e25;
+    --border: #3e3240;
+  }
+}
+
+:root[data-skin='prune'][data-theme='dark'] {
+  --accent: #c983bd;
+  --accent-soft: #331a30;
+  --ok: #c983bd;
+  --bg: #120d11;
+  --surface: #1b151a;
+  --surface-2: #261e25;
+  --border: #3e3240;
+}
+
+/* ---- Encre ------------------------------------------------------ */
+/* Sans couleur dominante : pour qui veut un écran sobre. */
+
+:root[data-skin='encre'] {
+  --accent: #2c3138;
+  --accent-soft: #e6e8ea;
+  --ok: #2c3138;
+  --bg: #fcfcfd;
+  --surface: #ffffff;
+  --surface-2: #eeeff1;
+  --border: #d0d3d8;
+}
+
+:root[data-skin='encre']:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --accent: #cfd5dc;
+    --accent-text: #14181c;
+    --accent-soft: #272d34;
+    --ok: #cfd5dc;
+    --bg: #0e1013;
+    --surface: #17191d;
+    --surface-2: #212429;
+    --border: #383c43;
+  }
+}
+
+:root[data-skin='encre'][data-theme='dark'] {
+  --accent: #cfd5dc;
+  --accent-text: #14181c;
+  --accent-soft: #272d34;
+  --ok: #cfd5dc;
+  --bg: #0e1013;
+  --surface: #17191d;
+  --surface-2: #212429;
+  --border: #383c43;
+}
+
+/* ---- Arrondis ---------------------------------------------------- */
+/* L'angle des cartes et des boutons se règle à part de la couleur :
+   ce sont deux goûts différents. */
+
+:root[data-corners='square'] {
+  --r-sm: 3px;
+  --r-md: 4px;
+  --r-lg: 6px;
+}
+
+:root[data-corners='round'] {
+  --r-sm: 14px;
+  --r-md: 22px;
+  --r-lg: 30px;
+}

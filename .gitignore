@@ -1,0 +1,54 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cle privee de signature des licences : ne doit jamais etre versionnee.
+licences/
+
+# ---- Secrets : rien de ce qui suit ne doit partir sur GitHub ----
+
+# Identifiants de la base de licences et mot de passe d'administration.
+serveur/config.php
+serveur/admin.php
+
+# Le guide d'installation nomme le compte d'hébergement et ses
+# chemins : il reste chez le vendeur.
+serveur/INSTALLATION.md
+
+# Les 2000 clés en clair, et la liste de qui a acheté quoi.
+licences/
+**/cles-gestock.txt
+**/licences*.csv
+
+# La liste des empreintes est embarquée dans l'application : la
+# publier donnerait de quoi reconnaître les clés valides.
+src/lib/cles.ts
+
+# L'exécutable du service d'impression : 82 Mo, reconstruit à la
+# demande, il n'a rien à faire dans l'historique.
+relay/build/
+
+# Fichiers produits par le serveur de développement : ils se
+# régénèrent à chaque lancement.
+dev-dist/

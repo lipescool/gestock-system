@@ -1,0 +1,11 @@
+{
+  "name": "gestock-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Relais d'impression local pour Gestock",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  }
+}

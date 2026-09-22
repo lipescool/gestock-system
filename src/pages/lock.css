@@ -1,0 +1,201 @@
+/* Écran d'accès. Il occupe la fenêtre entière : rien d'autre ne doit
+   être atteignable tant que le code n'est pas composé. */
+
+.lock {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--bg, #f4f6f8);
+  overflow-y: auto;
+}
+
+.lock-box {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 24px 24px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .1);
+}
+
+.lock-logo {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+
+.lock-box h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  /* Le nom d'une boutique peut être long : il se replie plutôt que de
+     déborder de la carte. */
+  overflow-wrap: anywhere;
+}
+
+.lock-hint {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-align: center;
+  /* Hauteur réservée : le texte change quand le compte à rebours
+     apparaît, et la carte sautait à chaque passage. */
+  min-height: 18px;
+}
+
+/* Les points remplacent un champ de saisie : le code ne s'affiche
+   jamais, même le temps d'être composé. */
+.lock-dots {
+  display: flex;
+  gap: 12px;
+  margin: 4px 0 8px;
+}
+
+.lock-dots span {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  transition: background .12s, border-color .12s, transform .12s;
+}
+
+.lock-dots span.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+/* Code refusé : les points virent au rouge et la rangée tressaille,
+   sans message à lire. */
+.lock-dots.bad span {
+  border-color: var(--danger);
+}
+.lock-dots.bad span.on {
+  background: var(--danger);
+}
+.lock-dots.bad {
+  animation: lock-shake .35s;
+}
+
+@keyframes lock-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+
+/* Une animation de secousse gêne qui y est sensible : on la retire
+   quand le système le demande, la couleur suffit alors. */
+@media (prefers-reduced-motion: reduce) {
+  .lock-dots.bad { animation: none; }
+  .lock-dots span { transition: none; }
+}
+
+.lock-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.lock-pad button {
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text);
+  transition: background .1s, transform .06s;
+}
+
+.lock-pad button:active:not(:disabled) {
+  background: var(--accent-soft);
+  transform: scale(.96);
+}
+
+.lock-pad button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.lock-del {
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+}
+
+/* ---- Récupération par question de secours ---- */
+
+.lock-question {
+  margin: 0;
+  padding: 12px 14px;
+  width: 100%;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  /* Une question peut être longue : elle se replie au lieu de forcer
+     la carte à s'élargir. */
+  overflow-wrap: anywhere;
+}
+
+.lock-answer {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 15px;
+  text-align: center;
+}
+.lock-answer:focus { border-color: var(--accent); outline: none; }
+.lock-answer.bad { border-color: var(--danger); }
+
+.lock-err {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+  text-align: center;
+}
+
+.lock-main {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+.lock-main:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Lien discret : « code oublié » est un recours, pas le chemin
+   habituel. */
+.lock-link {
+  margin-top: 2px;
+  padding: 6px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lock-link:hover { color: var(--accent); }

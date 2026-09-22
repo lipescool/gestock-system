@@ -1,0 +1,129 @@
+/* Écran d'activation. Il occupe la fenêtre : rien d'autre n'est
+   atteignable tant que la licence n'est pas établie. */
+
+.lic-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.lic-box {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 26px 26px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .1);
+  text-align: center;
+}
+
+.lic-logo {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.lic-box h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.lic-sub {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* La clé s'écrit en chiffres de largeur égale : les groupes
+   s'alignent, et une faute de saisie se repère à l'œil. */
+.lic-key {
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.lic-key:focus { border-color: var(--accent); outline: none; }
+.lic-key.bad { border-color: var(--danger); }
+
+.lic-err {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.lic-main {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+.lic-main:disabled { opacity: .45; cursor: not-allowed; }
+
+.lic-help {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* Le préfixe est posé devant le champ, pas dedans : dans la valeur,
+   il était relu comme une donnée à chaque frappe et s'accumulait. */
+.lic-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+.lic-field:focus-within { border-color: var(--accent); }
+.lic-field.bad { border-color: var(--danger); }
+
+.lic-prefix {
+  padding: 14px 4px 14px 14px;
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dim);
+  flex: none;
+}
+.lic-prefix::after { content: '-'; }
+
+.lic-field .lic-key {
+  border: 0;
+  border-radius: 0;
+  padding-left: 0;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+}
+.lic-field .lic-key:focus { outline: none; }

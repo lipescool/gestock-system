@@ -1,0 +1,197 @@
+/* Police Outfit, embarquée : aucune requête réseau, l'application démarre
+   hors ligne dès le premier lancement. */
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-Regular.ttf') format('truetype');
+  font-weight: 400; font-display: block;
+}
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-Medium.ttf') format('truetype');
+  font-weight: 500; font-display: block;
+}
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-display: block;
+}
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-Bold.ttf') format('truetype');
+  font-weight: 700; font-display: block;
+}
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit-ExtraBold.ttf') format('truetype');
+  font-weight: 800; font-display: block;
+}
+
+:root {
+  --accent: #10715a;
+  --accent-soft: #dbeee7;
+  --accent-text: #ffffff;
+
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef0f2;
+  --border: #c9ced4;
+  /* Noir franc pour le texte : le gris clair des maquettes devient illisible
+     sur un écran de caisse en plein jour. */
+  --text: #000000;
+  --text-dim: #4a5058;
+  --danger: #c22a2a;
+  --warn: #a96e00;
+  --ok: #10715a;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 4px 16px rgba(16, 24, 40, .05);
+
+  --header-h: 64px;
+  --gap: 16px;
+
+  color-scheme: light;
+}
+
+:root:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    --bg: #0d1013;
+    --surface: #161a1e;
+    --surface-2: #212730;
+    --border: #39414b;
+    --text: #ffffff;
+    --text-dim: #b3bcc6;
+    --accent: #2aa383;
+    --accent-soft: #123a2f;
+    --danger: #ef6a6a;
+    --warn: #d9a33a;
+    --ok: #2aa383;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0d1013;
+  --surface: #161a1e;
+  --surface-2: #212730;
+  --border: #39414b;
+  --text: #ffffff;
+  --text-dim: #b3bcc6;
+  --accent: #2aa383;
+  --accent-soft: #123a2f;
+  --danger: #ef6a6a;
+  --warn: #d9a33a;
+  --ok: #2aa383;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  /* Les chiffres d'Outfit n'ont pas tous la même largeur : un « 1 » est
+     plus étroit qu'un « 8 ». Sans cette règle, un montant qui change fait
+     bouger tout ce qui l'entoure, et les colonnes semblent trembler. */
+  font-variant-numeric: tabular-nums;
+  /* L'application occupe toute la fenêtre : pas de cadre ni de fond autour. */
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* Une caisse se manipule vite : la sélection accidentelle de texte gêne. */
+button, .no-select { user-select: none; -webkit-user-select: none; }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  color: inherit;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 10px 16px;
+  outline: none;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+textarea { border-radius: var(--r-md); resize: vertical; }
+
+/* Un select laissé au style natif dessine un bloc carré gris qui casse la
+   mise en page. On retire l'habillage du système et on dessine la flèche. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5l5-5' fill='none' stroke='%234a5058' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+:root[data-theme='dark'] select,
+:root:not([data-theme='light']) select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23b3bcc6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+/* La liste déroulante elle-même est dessinée par le système : on lui donne
+   au moins les bonnes couleurs pour qu'elle ne soit pas blanche sur sombre. */
+select option {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+}
+
+input[type='checkbox'] { accent-color: var(--accent); }
+input[type='date'], input[type='time'] { cursor: pointer; }
+
+/* Barre de défilement large : à 8 px, elle se saisit mal à la souris et
+   se voit à peine sur une longue liste. */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-thumb {
+  background: var(--text-dim);
+  border-radius: 8px;
+  /* La bordure transparente creuse une gouttière autour du curseur :
+     il paraît fin au repos tout en restant facile à attraper. */
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text); background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Firefox n'a pas les mêmes sélecteurs. */
+* { scrollbar-width: auto; scrollbar-color: var(--text-dim) transparent; }
+
+/* Sur mobile, une zone tactile descend rarement sous 44 px sans gêner. */
+@media (max-width: 720px) {
+  body { font-size: 15px; }
+  button, input, select { min-height: 44px; }
+}
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+}

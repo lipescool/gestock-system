@@ -1,0 +1,746 @@
+/* Chaque onglet de l'historique a sa teinte. Les trois vues n'ont ni la
+   même forme ni la même densité : on reconnaît l'onglet sans lire son nom. */
+
+.hist.tone-all   { --tone: #5a6675;        --tone-soft: rgba(90, 102, 117, .10); }
+.hist.tone-sales { --tone: var(--accent);  --tone-soft: var(--accent-soft); }
+.hist.tone-stock { --tone: #3b6fd4;        --tone-soft: rgba(59, 111, 212, .10); }
+.hist.tone-catalog { --tone: #b8621b;      --tone-soft: rgba(184, 98, 27, .10); }
+.hist.tone-money   { --tone: #b3891a;      --tone-soft: rgba(179, 137, 26, .12); }
+.hist.tone-config  { --tone: #8557c9;      --tone-soft: rgba(133, 87, 201, .10); }
+.hist.tone-system  { --tone: #5a6675;      --tone-soft: rgba(90, 102, 117, .10); }
+
+/* Les onglets réutilisent `.sub-tabs` de table.css, comme la page Stock.
+   Deux définitions parallèles finissaient toujours par diverger. */
+
+/* Bandeau de résumé, teinté comme l'onglet actif. */
+/* Teintes du bandeau, par onglet. Le préfixe `tone-` évite la collision
+   avec `.catalog`, qui désigne déjà le catalogue de la caisse et dont la
+   règle `flex-direction: column` renvoyait le compteur au centre. */
+.hist-bar.tone-all     { --tone: #5a6675; --tone-soft: rgba(90, 102, 117, .10); }
+.hist-bar.tone-sales   { --tone: var(--accent); --tone-soft: var(--accent-soft); }
+.hist-bar.tone-stock   { --tone: #3b6fd4; --tone-soft: rgba(59, 111, 212, .10); }
+.hist-bar.tone-catalog { --tone: #b8621b; --tone-soft: rgba(184, 98, 27, .10); }
+.hist-bar.tone-money   { --tone: #b3891a; --tone-soft: rgba(179, 137, 26, .12); }
+.hist-bar.tone-config  { --tone: #8557c9; --tone-soft: rgba(133, 87, 201, .10); }
+.hist-bar.tone-system  { --tone: #5a6675; --tone-soft: rgba(90, 102, 117, .10); }
+
+.hist-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  flex: none;
+  flex-wrap: nowrap;
+  padding: 13px 18px 13px 14px;
+  border-radius: var(--r-md);
+  background: var(--tone-soft);
+  border-left: 4px solid var(--tone);
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.hist-bar b {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--tone);
+  font-variant-numeric: tabular-nums;
+}
+.hist-bar small {
+  font-size: 13px;
+  /* Le texte explicatif cède la place plutôt que de renvoyer le bandeau
+     à la ligne : c'est un complément, pas le chiffre principal. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+/* Le compteur commence à gauche, à l'aplomb de la première colonne du
+   tableau en dessous. */
+.hist-bar > span:first-child {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* Le bandeau ne s'étire plus sur toute sa largeur : ses éléments se
+   suivent à gauche. `justify-content: space-between` renvoyait les
+   compteurs d'entrées et de sorties à l'autre bout de la ligne. */
+.hist-bar {
+  justify-content: flex-start;
+}
+.hist-bar .split {
+  display: flex;
+  gap: 22px;
+  margin-left: 8px;
+}
+/* Intitulé en gris, chiffre en couleur : on lit ce que compte le
+   nombre avant de lire le nombre lui-même. */
+.hist-bar .stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.hist-bar .stat b { font-size: 16px; }
+.hist-bar .split { display: flex; gap: 14px; }
+.hist-bar .split .in { color: var(--ok); }
+.hist-bar .split .out { color: var(--danger); }
+
+/* Les listes reposent sur une carte blanche, comme les tableaux de
+   Stock : posées à même la page, elles semblaient flotter et leurs
+   colonnes n'avaient aucun cadre auquel s'aligner. */
+/* La carte s'arrête après la dernière ligne au lieu de s'étirer sur
+   toute la hauteur : avec trois entrées, un cadre vide descendait
+   jusqu'en bas de l'écran sans jamais se refermer. */
+.hist-scroll {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+/* La dernière ligne n'a pas de trait sous elle : la bordure de la
+   carte le fait déjà. Ses cellules épousent les coins arrondis. */
+.hist-scroll li:last-child > *:first-child {
+  border-bottom-left-radius: var(--r-lg);
+}
+.hist-scroll li:last-child > *:last-child {
+  border-bottom-right-radius: var(--r-lg);
+}
+
+/* L'en-tête épouse le haut de la carte. */
+.hist-scroll .row-head {
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+/* Une ligne sur deux teintée : sur des colonnes larges, l'œil perd sa
+   ligne en passant d'un bout à l'autre. */
+.hist-scroll li:nth-child(even) { background-color: var(--surface-2); }
+.hist-scroll li:hover { background-color: var(--accent-soft); }
+
+.hist-scroll > ul { padding-bottom: 4px; }
+.hist-scroll li:last-child { border-bottom: 0; }
+
+/* ---- Ventes : lignes, comme les autres onglets ---- */
+
+.sales-list { list-style: none; margin: 0; padding: 0; }
+.sales-head, .sales-list li {
+  display: grid;
+  align-items: stretch;
+  padding: 0;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sales-list li:hover { background: var(--surface-2); }
+.sales-list li.void { opacity: .5; }
+
+.sales-list time {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.sales-list .what {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+.sales-list .what b {
+  font-weight: 700;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-list .det {
+  font-size: 13px;
+  color: var(--text-dim);
+  /* Pas de largeur maximale : la cellule appartient à la grille, la
+     brider la sortait de sa colonne et emportait son trait. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* La mise en forme de cette cellule est définie plus bas, avec les
+   autres cellules porteuses d'un bouton. */
+
+.sales-list .act { margin-left: 0; }
+
+.sales-list .amount {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.recap { display: flex; flex-direction: column; gap: 4px; }
+.recap-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 3px 0;
+}
+.recap-line.total {
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 9px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* ---- Mouvements : frise verticale ---- */
+
+.moves { list-style: none; margin: 0; padding: 0; }
+.moves-head, .moves li {
+  display: grid;
+  align-items: stretch;
+  padding: 0;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+}
+.moves li:hover { background: var(--surface-2); }
+
+/* Étiquette du motif : chaque raison a sa couleur, et son nom est écrit.
+   Une flèche seule ne distinguait pas une vente d'une perte. */
+.reason {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+/* Un seul fond pour tous les motifs : huit couleurs différentes dans
+   une même colonne la hachaient de bandes et empêchaient de suivre le
+   trait de séparation. Le mot suffit à dire de quoi il s'agit. */
+.reason { background: var(--surface-2); color: var(--text-dim); }
+
+
+
+/* Le nom et le détail sur la même ligne : en blocs empilés, chaque
+   mouvement occupait deux lignes alors que la place ne manque pas. */
+.move-body {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  overflow: hidden;
+}
+.move-body b {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+}
+.move-body small {
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.move-num {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.move-num .delta {
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.moves li.pos .delta { color: var(--ok); }
+.moves li.neg .delta { color: var(--danger); }
+.move-num small { font-size: 13px; color: var(--text-dim); white-space: nowrap; }
+.moves li { white-space: nowrap; }
+
+.moves time {
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Journal : fil technique dense ---- */
+
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.feed-head, .feed li {
+  display: grid;
+  align-items: stretch;
+  padding: 0;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+  /* Une entrée de journal tient sur une ligne : c'est un relevé, on le
+     parcourt du regard, on ne le lit pas ligne à ligne. */
+  white-space: nowrap;
+}
+
+.feed time {
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.feed .entity {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  font-weight: 700;
+  color: var(--tone);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .03em;
+}
+.feed .action {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--tone-soft);
+  color: var(--tone);
+  font-weight: 600;
+  font-size: 13px;
+}
+.feed .detail {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.feed .detail b {
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.feed .detail em {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 720px) {
+  .hist-bar { gap: 10px; padding: 10px 14px; }
+}
+
+/* ---- Vue « Tout » : une frise unique, tous flux confondus ---- */
+
+.feed-all {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.all-head, .feed-all li {
+  display: grid;
+  align-items: stretch;
+  padding: 0;
+  min-height: 44px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.feed-all li:hover { background: var(--surface-2); }
+
+.feed-all time {
+  color: var(--text-dim);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Une pastille colorée par type : on distingue les flux d'un coup d'œil. */
+.feed-all .dot-mark {
+  align-self: center;
+  justify-self: start;
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  min-height: 9px;
+  flex: none;
+  border-radius: 50%;
+}
+.feed-all li.sale .dot-mark { background: var(--accent); }
+.feed-all li.move .dot-mark { background: #3b6fd4; }
+.feed-all li.log  .dot-mark { background: #8557c9; }
+
+.feed-all .what {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.feed-all .what svg { flex: none; }
+.feed-all .what b {
+  text-transform: uppercase;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* La parenthèse dit ce qui s'est passé et de combien : elle complète le
+   nom sans le concurrencer. */
+.feed-all .what i {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex: none;
+}
+.feed-all .reason { font-size: 13px; padding: 3px 10px; }
+.feed-all .det {
+  color: var(--text-dim);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+.feed-all .val {
+  font-weight: 800;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.feed-all .val.sale { color: var(--accent); }
+.feed-all .val.pos { color: var(--ok); }
+.feed-all .val.neg { color: var(--danger); }
+.feed-all .val.dim { color: var(--text-dim); font-weight: 500; }
+
+/* ---- En-tête de colonnes ----
+
+   Chaque liste a son propre en-tête, déclaré avec sa propre grille. Les
+   quatre vues n'affichent pas les mêmes choses : leur imposer une règle
+   commune revenait à casser l'une en corrigeant l'autre. Seule
+   l'apparence du bandeau est partagée, jamais la disposition. */
+
+/* En-tête contrasté, à la manière d'une feuille de calcul : un bandeau
+   plein sépare nettement les titres des données, là où un simple texte
+   gris se confondait avec la première ligne.
+
+   La grille et l'écart sont déclarés ici, pas seulement sur les lignes :
+   sans eux, les titres se répartissaient autrement que les données et
+   aucune colonne ne tombait en face de la sienne. */
+.row-head {
+  display: grid;
+  align-items: center;
+  padding: 0;
+  min-height: 40px;
+  align-items: stretch;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-text);
+  background: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Hauteur de ligne commune aux quatre listes : c'est la seule chose
+   qu'elles partagent vraiment. */
+.sales-list li,
+.moves li,
+.feed li,
+.feed-all li {
+  min-height: 44px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* ---- Ventes : date · produits · client · paiement · total · action ---- */
+
+/* Six colonnes. La date et le bouton gardent leur largeur naturelle :
+   leur contenu ne varie pas, leur réserver une part de la largeur ne
+   ferait que du vide. Les quatre autres se partagent le reste à parts
+   égales, chacune sous son titre. */
+.sales-head, .sales-list li {
+  grid-template-columns:
+    152px              /* date, « 20/09/2026 18:53 »    */
+    minmax(0, 1fr)     /* produits                      */
+    minmax(0, 1fr)     /* client                        */
+    minmax(0, 1fr)     /* paiement                      */
+    minmax(0, 1fr)     /* total                         */
+    146px;             /* réimprimer, avec de l'air autour */
+  gap: 0;
+}
+.sales-list li > *, .sales-head > * { min-width: 0; }
+.sales-list .what, .sales-list .det { overflow: hidden; text-overflow: ellipsis; }
+.sales-list .amount { justify-self: start; }
+.sales-list .act-cell { justify-self: stretch; }
+
+/* ---- Mouvements : date · motif · produit · quantité ---- */
+
+.moves-head, .moves li {
+  grid-template-columns: 152px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+}
+.moves li > *, .moves-head > * { min-width: 0; }
+.move-body { overflow: hidden; }
+
+/* ---- Journal : date · type · action · détail ---- */
+
+.feed-head, .feed li {
+  grid-template-columns: 152px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  gap: 0;
+}
+.feed li > *, .feed-head > * { min-width: 0; }
+.feed .detail { overflow: hidden; }
+
+/* ---- Tout : date · pastille · détail · type · montant ---- */
+
+.all-head, .feed-all li {
+  grid-template-columns:
+    152px 26px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+}
+.feed-all li > *, .all-head > * { min-width: 0; }
+.feed-all .what { overflow: hidden; }
+.feed-all .val { justify-self: start; }
+
+/* ---- Téléphone ----
+
+   Les colonnes ne tiennent plus : l'en-tête disparaît et chaque ligne
+   reprend une disposition en deux blocs, contenu à gauche, chiffre à
+   droite. */
+
+@media (max-width: 900px) {
+  .row-head { display: none; }
+
+  .sales-list li,
+  .moves li,
+  .feed li,
+  .feed-all li {
+    grid-template-columns: 1fr auto;
+    row-gap: 4px;
+    padding: 10px 14px;
+    white-space: normal;
+  }
+
+  .sales-list time, .moves time, .feed time, .feed-all time {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+  .sales-list .det, .sales-list .pay { order: 4; }
+}
+
+/* ---- Séparation des colonnes ----
+
+   Sans écart de grille : chaque cellule porte sa propre marge et son
+   filet de gauche. C'est ce qui aligne la colonne, son trait et son
+   contenu sur la même verticale, du titre à la dernière ligne. Avec un
+   `gap`, le filet se posait dans l'entre-deux et décalait la valeur par
+   rapport à son titre. */
+
+.sales-head > *, .sales-list li > *,
+.moves-head > *, .moves li > *,
+.feed-head > *, .feed li > *,
+.all-head > *, .feed-all li > * {
+  /* La cellule occupe toute la hauteur de sa ligne : sinon son filet
+     s'arrête à la hauteur du texte et les traits, interrompus d'une
+     ligne à l'autre, ne forment pas la colonne continue qui permet de
+     suivre une donnée du titre jusqu'en bas. */
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 18px;
+}
+
+/* Ces éléments sont eux-mêmes des cellules de la grille : leur donner
+   une largeur propre les sortait de leur colonne — largeur 71 px au
+   lieu de 317, hauteur 26 au lieu de 43 — et emportait avec eux le
+   trait de séparation.
+
+   Ils occupent donc toute leur cellule, et c'est un fond intérieur qui
+   dessine la pastille, pas la boîte elle-même. */
+.sales-list .pay,
+.sales-list .act-cell {
+  width: auto;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+}
+
+/* La cellule occupe toute sa colonne — c'est elle qui porte le trait de
+   séparation — et son contenu garde sa taille propre à l'intérieur.
+   
+   Redimensionner la cellule elle-même la sortait de la grille : elle
+   passait de 317 à 71 pixels et emportait le trait avec elle. */
+.sales-list .pay em {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.sales-list .act {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  margin: 0;
+  flex: none;
+}
+
+/* ---- Pastilles des autres onglets ----
+
+   Même principe que pour les ventes : la cellule occupe toute sa
+   colonne — c'est elle qui porte le trait de séparation — et la
+   pastille garde sa taille propre à l'intérieur. */
+
+.reason-cell, .entity-cell, .action-cell {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.reason-cell em, .entity-cell em, .action-cell em {
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.mv-in, .mv-out {
+  flex: none;
+  width: max-content;
+  max-width: 100%;
+  align-self: center;
+}
+
+/* Les séparateurs sont dessinés par la cellule elle-même, en trait
+   plein sur son bord gauche.
+   
+   La difficulté tenait aux éléments opaques posés dessus — la pastille
+   « Espèces », le bouton « Réimprimer » — qui recouvraient le trait de
+   leur propre fond. Ils sont désormais tenus à distance du bord par la
+   marge de la cellule, si bien que le trait reste dégagé sur toute la
+   hauteur du tableau. */
+.sales-head > * + *, .sales-list li > * + *,
+.moves-head > * + *, .moves li > * + *,
+.feed-head > * + *, .feed li > * + *,
+.all-head > * + *, .feed-all li > * + * {
+  /* Le trait est peint comme un fond de cellule, non comme une bordure.
+     Une bordure se fait recouvrir par le fond de la ligne, qui est
+     peint après elle ; un dégradé placé sur la cellule, lui, passe
+     par-dessus et reste visible sur les lignes teintées. */
+  background-image: linear-gradient(var(--border), var(--border));
+  background-size: 1.5px 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.row-head > * + * {
+  background-image: linear-gradient(rgba(255, 255, 255, .32), rgba(255, 255, 255, .32));
+  background-size: 1.5px 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+/* La pastille de la vue « Tout » est un point coloré, pas une colonne
+   de données : elle n'a pas de filet. */
+/* La pastille de couleur n'est pas une colonne de données : ni trait,
+   ni marge. Sa voisine, en revanche, garde le sien. */
+.feed-all li > .dot-mark,
+.all-head > *:nth-child(2) {
+  background-image: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* L'en-tête ne porte pas de filet : les titres se distinguent déjà par
+   leur casse et leur couleur, et un quadrillage complet alourdirait. */
+/* Même trait que dans les lignes, pour que la colonne se lise d'un seul
+   trait continu du titre jusqu'en bas. */
+
+
+@media (max-width: 900px) {
+  /* Empilées, les colonnes n'ont plus de voisine à leur droite. */
+  .sales-list li > * + *,
+  .moves li > * + *,
+  .feed li > * + *,
+  .feed-all li > * + * {
+    background-image: none;
+    padding-left: 0;
+  }
+}
+
+/* ---- Tout à gauche ----
+
+   Chaque valeur commence à l'aplomb de son titre : une cellule centrée
+   oblige l'œil à chercher où débute la donnée en descendant la colonne. */
+
+.row-head > *,
+.sales-list li > *,
+.moves li > *,
+.feed li > *,
+.feed-all li > * {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* Le bandeau aligne son contenu à gauche, comme la première colonne du
+   tableau qu'il surplombe. */
+.hist-bar {
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* Message d'échec de réimpression : une information passagère, pas une
+   alerte bloquante — elle s'efface d'elle-même. */
+.hist-print-err {
+  margin: 0 0 10px;
+  padding: 9px 14px;
+  border-radius: var(--r-sm);
+  background: var(--warn-soft, #fff4e5);
+  border: 1px solid var(--warn, #d98324);
+  color: var(--warn, #d98324);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Repère de fin de liste : invisible, il sert seulement à savoir que
+   le bas est atteint pour charger la suite. */
+.hist-sentinelle {
+  height: 1px;
+  margin-top: -1px;
+}
+
+/* Place réservée pendant le calcul : l'écran garde sa hauteur au lieu
+   de se replier puis de se redéployer quand les données arrivent. */
+.hist-attente { min-height: 300px; }

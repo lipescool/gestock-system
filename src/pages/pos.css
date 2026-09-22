@@ -1,0 +1,629 @@
+.pos {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--gap);
+  padding: var(--gap);
+  height: 100%;
+  min-height: 0;
+}
+
+.pos-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+:root[data-theme='dark'] .card h2 { color: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .card h2 { color: #fff; }
+}
+.card h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+  grid-column: 1 / -1;
+}
+
+/* ---- Bandeau des totaux par période ---- */
+
+.periods { flex: none; }
+
+.periods-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* `auto-fit` redistribue les colonnes dès qu'une tuile apparaît ou
+   disparaît : les chiffres sautaient d'un côté à l'autre à chaque vente.
+   Une largeur minimale fixe avec `auto-fill` garde les colonnes en place,
+   et la tuile ajoutée se range à la suite sans déplacer les autres. */
+.kpis {
+  display: grid;
+  /* Colonnes de largeur fixe, et non calculée sur le contenu.
+     
+     Avec `auto-fit` et `auto`, la grille recalculait ses colonnes chaque
+     fois qu'un montant changeait de longueur — « 0 FCFA » au chargement
+     puis « 103 000 FCFA » une fois les chiffres arrivés. Toutes les
+     tuiles se déplaçaient alors d'un coup : c'est ce qui donnait cette
+     impression de tremblement à l'ouverture de la caisse.
+     
+     Chaque tuile occupe désormais la même largeur quoi qu'elle affiche,
+     et son contenu s'y adapte au lieu de l'inverse. */
+  /* Les six tuiles sur une seule ligne, à largeur égale.
+
+     Le nombre de colonnes est fixe : calculé d'après la place
+     disponible, il rangeait les six en cinq plus une, et la dernière
+     restait seule, collée à gauche. Fixe, il évite aussi que les
+     tuiles sautent quand un montant passe de « 0 FCFA » à
+     « 103 000 FCFA » — c'est ce qui donnait l'impression de
+     tremblement à l'ouverture de la caisse.
+
+     Les montants s'ajustent à la largeur reçue plutôt que de
+     l'imposer : voir la taille de police de `.kpi b`. */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Sur un écran étroit, six colonnes rendraient les montants
+   illisibles : on passe à deux rangées de trois, puis à trois de
+   deux sur un téléphone. */
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.kpi {
+  min-width: 0;
+  /* La tuile devient l'unité de mesure de son contenu : c'est ce qui
+     permet au montant de se dimensionner sur elle. */
+  container-type: inline-size;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  /* Contenu centré : un chiffre isolé dans une tuile large paraît
+     abandonné dans un coin. */
+  text-align: center;
+}
+.kpi small {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+.kpi b {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  /* Le montant s'ajuste à la tuile plutôt que d'en déborder. Sans
+     cela, « 64 805 000 FCFA » dépassait sa colonne et paraissait
+     décalé alors que le centrage était correct. */
+  font-size: clamp(13px, 10.5cqi, 20px);
+  /* Hauteur minimale, pas fixe : une tuile vide garde la même taille que
+     ses voisines, mais un montant long reste entièrement lisible.
+     Avec `height` et `overflow: hidden`, le chiffre était rogné. */
+  min-height: 24px;
+  font-variant-numeric: tabular-nums;
+  /* Le montant n'est jamais rogné : c'est l'information même de la tuile. */
+  overflow: visible;
+}
+.kpi small {
+  min-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kpi.accent { background: var(--accent-soft); }
+.kpi.accent b { color: var(--accent); }
+.kpi.ok b { color: var(--ok); }
+.kpi.warn b { color: var(--warn); }
+.kpi.danger b { color: var(--danger); }
+
+/* ---- Catalogue ---- */
+
+.pos-catalog {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-catalog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pos-cats {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  scrollbar-width: thin;
+}
+.pos-cat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  /* Largeur identique pour toutes, et non une simple largeur minimale :
+     « ALIMENTATION GENERALE » étirait son bouton à 146 px quand les
+     autres en faisaient 78, et la rangée paraissait bancale. */
+  width: 84px;
+  padding: 10px 6px;
+  border-radius: var(--r-md);
+  color: var(--text-dim);
+  flex: none;
+}
+.pos-cat-ico {
+  width: 46px; height: 46px;
+  display: grid; place-items: center;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: 22px;
+}
+.pos-cat small {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  /* Deux lignes au plus, le reste coupé : la largeur étant fixe, un nom
+     long doit s'y plier. Deux lignes réservées pour que les boutons
+     gardent la même hauteur quel que soit le nom. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.25;
+  min-height: calc(2em * 1.25);
+  text-align: center;
+  word-break: break-word;
+}
+.pos-cat small { color: var(--text-dim); }
+.pos-cat.on small { font-weight: 700; color: var(--text); }
+/* Le cercle de sélection est tracé à l'extérieur de la vignette : posé
+   à l'intérieur, les coins arrondis le rognaient et le trait paraissait
+   interrompu en haut, à gauche et à droite. */
+.pos-cat.on .pos-cat-ico {
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.pos-grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+  padding: 2px;
+  align-content: start;
+}
+
+/* Avec images : vignettes larges, le nom passe en second. */
+.pos-grid.with-img { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); }
+
+/* Sans images : plus de colonnes, et le nom occupe la place libérée —
+   c'est lui qui devient le repère visuel. */
+.pos-grid.no-img { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+
+.pos-prod {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  /* Le cadre contient les boutons : sans lui, le « + » débordait de la carte. */
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  padding: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.pos-prod:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.pos-prod.out { opacity: .55; cursor: not-allowed; }
+
+/* Avec image : la vignette occupe le haut de la carte. */
+/* La vignette a toujours la même taille, quelle que soit la photo :
+   `object-fit: cover` la recadre au lieu de la déformer ou de laisser
+   la carte s'allonger. */
+/* La vignette épouse les deux coins hauts de la carte. Son arrondi
+   était plus petit que celui du cadre : la différence laissait voir les
+   angles de la carte autour de l'image, et la bordure paraissait
+   interrompue en haut. L'arrondi est repris du cadre, moins l'épaisseur
+   du trait, pour que les deux courbes coïncident. */
+.pos-prod.has-img .prod-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: calc(var(--r-md) - 1.5px) calc(var(--r-md) - 1.5px) 0 0;
+  overflow: hidden;
+  background: var(--surface-2);
+  margin: -10px -10px 0;
+}
+.prod-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Cadre d'attente, quand le produit n'a pas encore de photo. */
+.prod-noimg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  opacity: .55;
+}
+.prod-img .badge {
+  position: absolute; inset: auto 0 0 0;
+  background: rgba(0, 0, 0, .75); color: #fff;
+  font-size: 11px; font-weight: 700;
+  text-align: center; padding: 4px;
+}
+
+/* Sans image, aucune place n'est réservée : la carte se resserre autour
+   du texte et le nom devient le repère principal. */
+.pos-prod.flat {
+  min-height: 126px;
+  justify-content: space-between;
+  background: var(--surface-2);
+  padding: 14px;
+  /* Même écartement que les cartes à photo : plus large, le prix
+     s'éloignait du stock alors que les deux se lisent ensemble. */
+  gap: 8px;
+}
+.pos-prod.flat:hover { background: var(--accent-soft); }
+
+.prod-body {
+  min-width: 0;
+  /* Hauteur réservée pour le nom et la catégorie : sans elle, un nom
+     sur une ligne et un nom sur deux décalaient le prix en dessous. */
+  min-height: 58px;
+}
+.prod-name {
+  /* Majuscules garanties, y compris pour les fiches créées avant que la
+     règle ne soit appliquée à la saisie. */
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 700;
+  line-height: 1.25;
+  font-size: 14px;
+  letter-spacing: -.01em;
+
+  /* Deux lignes réservées quoi qu'il arrive, et le nom court centré
+     dedans. Sans cette hauteur, « NINA » remontait d'une ligne et tout
+     ce qui suit — catégorie, stock, prix — se décalait par rapport à la
+     carte voisine dont le nom tient sur deux lignes. Les cartes ne
+     s'alignaient plus entre elles. */
+  min-height: calc(2em * 1.25);
+  align-content: center;
+}
+.pos-prod.flat .prod-name {
+  font-size: 17px;
+  /* Deux lignes ici aussi : au-delà le nom est coupé. Trois lignes
+     réservées creusaient un vide sous les noms courts, et les cartes
+     sans photo n'avaient plus la même allure que les autres. */
+  -webkit-line-clamp: 2;
+  min-height: calc(2em * 1.25);
+}
+
+/* Catégorie sous le nom, comme sur une étiquette de rayon. */
+.prod-cat {
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  /* Hauteur de ligne fixée, sinon le texte occupe une boîte plus haute
+     que ses lettres et le centrage porte sur cette boîte, pas sur ce
+     qu'on voit. */
+  line-height: 1;
+}
+
+/* L'icône est ramenée à la hauteur des majuscules qui la suivent.
+   Centrer les boîtes ne suffisait pas : un pictogramme de 12 px à côté
+   d'un texte dont la ligne en fait 15 laisse un décalage visible, et
+   l'ensemble paraissait bancal. */
+.prod-cat > svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Stock affiché sur toutes les cartes : le connaître avant de promettre
+   une quantité évite d'avoir à ouvrir la fiche produit. */
+.prod-stock {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+.prod-stock.low { color: var(--warn); }
+.prod-stock.danger { color: var(--danger); }
+
+.prod-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  /* Le pied suit le stock au lieu d'être repoussé au bas de la carte.
+     Avec `margin-top: auto`, tout l'espace libre se glissait entre le
+     nombre de pièces et le prix, et l'écart paraissait béant sur les
+     cartes au nom court. Les cartes gardent la même hauteur : c'est la
+     grille qui s'en charge, pas ce vide.
+
+     La marge négative annule l'espacement que la carte applique entre
+     tous ses éléments : le prix se place juste sous le stock, comme
+     deux lignes d'une même étiquette. */
+  margin-top: -4px;
+  padding-top: 0;
+}
+/* Le prix tient sur une ligne avec les boutons : il rétrécit plutôt que
+   de se tronquer ou de passer au-dessus. Un montant coupé est inutilisable
+   en caisse, et une carte qui change de hauteur fait sauter la grille. */
+.prod-price {
+  font-size: clamp(11px, 3.6cqw, 16px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+  /* Le prix est ce qu'on cherche en premier sur une carte : la couleur
+     d'accent le détache du nom et du stock, qui restent en gris. */
+  color: var(--accent);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.stepper button {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 15px;
+  line-height: 1;
+}
+.stepper button:disabled { opacity: .35; cursor: not-allowed; }
+.stepper b { min-width: 22px; text-align: center; font-size: 14px; font-weight: 700; }
+.stepper .del { border-color: transparent; background: transparent; font-size: 13px; }
+.stepper.sm {
+  gap: 3px;
+  flex: none;
+  justify-content: flex-end;
+}
+.stepper.sm button {
+  width: 25px; height: 25px;
+  flex: none;
+  background: var(--surface);
+  border-color: var(--border);
+}
+.stepper.sm button:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.stepper.sm b { min-width: 16px; font-size: 13px; }
+
+/* ---- Panneau de vente ---- */
+
+.pos-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--surface-2);
+  border-radius: var(--r-pill);
+}
+.seg button {
+  flex: 1;
+  padding: 9px 4px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.seg button.on { background: var(--surface); color: var(--text); font-weight: 700; box-shadow: var(--shadow); }
+
+.side-one { display: block; }
+.side-one > span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+.side-one i { font-style: normal; opacity: .7; }
+
+/* Choix du moyen de paiement, dans le flux de la vente */
+.side-pay { display: flex; flex-direction: column; gap: 8px; }
+.pay-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pay-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 600;
+}
+.pay-chip span { font-size: 15px; line-height: 1; }
+.pay-chip.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.lines-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.lines-head small { font-size: 12px; color: var(--text-dim); }
+
+.lines {
+  flex: 1;
+  min-height: 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 2px;
+}
+.line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.line-info { flex: 1; min-width: 0; }
+.line-info b {
+  text-transform: uppercase;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.line-info small { font-size: 12px; color: var(--text-dim); }
+.line-max { font-style: normal; color: var(--warn); font-weight: 700; }
+.line-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.line-total { font-size: 15px; font-weight: 700; white-space: nowrap; }
+
+.totals { display: flex; flex-direction: column; gap: 6px; }
+.totals .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.totals .row b { color: var(--text); font-weight: 600; }
+.totals .row.strong {
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.totals .row.strong b { font-size: 19px; font-weight: 800; }
+
+.pos-checkout {
+  padding: 15px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 15px;
+  flex: none;
+}
+.pos-checkout:disabled { opacity: .4; cursor: not-allowed; }
+
+.pos-flash {
+  position: fixed;
+  left: 50%; bottom: 24px;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 10px 20px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  z-index: 60;
+}
+
+/* ---- Tablette et téléphone ---- */
+
+@media (max-width: 1100px) {
+  .pos { grid-template-columns: 1fr 330px; }
+}
+
+/* ---- Téléphone et tablette ---- */
+
+@media (max-width: 900px) {
+  .pos {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .pos-side {
+    position: sticky;
+    bottom: 0;
+    max-height: 70vh;
+  }
+  .pos-catalog { min-height: 460px; }
+  .pos-grid { overflow: visible; }
+}
+
+@media (max-width: 560px) {
+  .pos { padding: 10px; gap: 10px; }
+  .card { padding: 14px; border-radius: var(--r-md); }
+  .pos-catalog-head { flex-direction: column; align-items: stretch; }
+  .pos-search { max-width: none; }
+
+  .pos-grid.with-img { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .pos-grid.no-img { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  .kpi b { font-size: 17px; }
+}

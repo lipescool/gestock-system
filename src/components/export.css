@@ -1,0 +1,39 @@
+/* Boutons d'export, à droite du bandeau de résumé.
+
+   Ils poussent le reste vers la gauche plutôt que de s'y coller : ce
+   sont des actions, pas des chiffres, et les tenir à l'écart évite de
+   les confondre avec le contenu du bandeau. */
+
+.exports {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex: none;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.export-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.export-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  /* Sur téléphone, seules les icônes restent : les libellés feraient
+     déborder le bandeau. */
+  .export-btn { padding: 7px 10px; }
+  .export-btn > *:not(svg) { display: none; }
+}

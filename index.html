@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+    <meta name="theme-color" content="#1f8a70" />
+    <meta name="description" content="Gestion de boutique hors ligne : caisse, stock, dépenses." />
+
+    <!-- Installation sur l'écran d'accueil iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Gestock" />
+
+    <title>Gestock</title>
+
+    <style>
+      /* Fond posé avant le chargement du CSS : évite le flash blanc puis
+         sombre à l'ouverture. */
+      html { background: #fff; }
+      @media (prefers-color-scheme: dark) { html { background: #0f1214; } }
+      .boot { height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

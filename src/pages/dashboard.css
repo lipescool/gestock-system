@@ -1,0 +1,203 @@
+/* Le tableau de bord tient dans l'écran : rien ne défile ici. Les
+   tuiles gardent leur hauteur, et la grille de cartes occupe ce qui
+   reste. Une carte trop remplie fait défiler sa propre liste, pas la
+   page. */
+.dash-scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: 2px;
+  overflow: hidden;
+}
+
+/* Les sept indicateurs tiennent sur une seule ligne : c'est un tableau de
+   bord, on doit tout voir d'un coup d'œil sans balayer deux rangées.
+   `repeat(7, …)` fixe le compte, `minmax(0, 1fr)` laisse chaque tuile se
+   resserrer plutôt que de repousser les suivantes. */
+.kpis.big {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  justify-content: center;
+}
+
+/* En dessous, la ligne deviendrait illisible : on passe à deux rangées
+   puis à deux colonnes, par paliers nets. */
+@media (max-width: 1250px) { .kpis.big { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px)  { .kpis.big { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpis.big .kpi { padding: 16px 12px; text-align: center; }
+.kpis.big .kpi { container-type: inline-size; }
+.kpis.big .kpi b {
+  font-size: clamp(14px, 13cqw, 24px);
+  min-height: 30px;
+}
+
+/* ---- Graphique en barres ---- */
+
+/* ---- Deux colonnes ---- */
+
+/* Deux rangées égales, qui se partagent la hauteur restante. */
+.dash-cols {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: var(--gap);
+}
+
+/* Toutes les cartes ont la même hauteur, pour qu'on les voie d'un
+   seul regard sans que la page s'allonge. Celle qui a trop de lignes
+   les fait défiler : elle ne pousse ni ses voisines ni la page. */
+.dash-cols .card {
+  display: flex;
+  flex-direction: column;
+  /* La hauteur vient de la grille, pas d'un chiffre fixé : sur un
+     petit écran une valeur en dur débordait, sur un grand elle
+     laissait du vide. */
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dash-cols .card > h2 { flex: none; }
+
+/* Les lignes gardent leur espacement d'origine : seule la zone de
+   défilement est bornée, son contenu n'est pas étiré. */
+.dash-cols .card > .rank,
+.dash-cols .card > .lowlist,
+.dash-cols .card > .feed {
+  min-height: 0;
+  overflow-y: auto;
+  /* Une barre discrète : elle ne doit pas attirer l'œil plus que les
+     chiffres qu'elle laisse défiler. */
+  scrollbar-width: thin;
+}
+
+/* Titres de section centrés, comme les onglets et les filtres. */
+.dash .card h2 {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+/* La liste porte la grille, pas chaque ligne : les colonnes se
+   mesurent alors sur l'ensemble des lignes, et la quantité vendue
+   occupe la même place partout. Ligne par ligne, chacune calculait sa
+   propre largeur et les pastilles se décalaient. */
+.rank {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) max-content max-content;
+  gap: 0;
+}
+/* Quatre colonnes plutôt qu'une simple rangée : en flex, chaque
+   élément prenait la largeur de son contenu, si bien que la quantité
+   vendue se déplaçait d'une ligne à l'autre selon la longueur du
+   montant voisin. Les colonnes leur donnent une place fixe. */
+/* Chaque ligne reprend les colonnes de la liste au lieu d'en créer
+   de nouvelles. */
+.rank li {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.rank li > * + * { margin-left: 14px; }
+.rank li:last-child { border-bottom: 0; }
+.rank .n {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  flex: none;
+}
+.rank li:first-child .n { background: var(--accent); color: var(--accent-text); }
+.rank .nm {
+  text-transform: uppercase;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* « ×8 » en petit gris ne se lisait pas : la quantité vendue est une
+   information de premier plan sur un classement des meilleures ventes. */
+.rank .q {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  /* Calée à gauche de sa colonne : centrée, sa position dépendait de
+     sa propre largeur et « 8 vendus » ne commençait pas au même
+     endroit que « 120 vendus ». */
+  justify-self: start;
+}
+
+/* Le montant est aligné à droite et ses chiffres ont tous la même
+   largeur : les sommes se lisent alors les unes sous les autres. */
+.rank b {
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lowlist {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lowlist li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.lowlist li:last-child { border-bottom: 0; }
+.lowlist .nm {
+  text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .dash-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .kpis.big .kpi b { font-size: 19px; }
+}
+
+/* Une dépense se lit comme une sortie : même couleur que les mouvements
+   de stock négatifs, pour que l'œil fasse le lien. */
+.exp-amt {
+  font-weight: 800;
+  color: var(--danger);
+  white-space: nowrap;
+}
+
+/* Une remise réduit la recette : même couleur ambrée que la tuile. */
+.disc-amt {
+  font-weight: 800;
+  color: var(--warn);
+  white-space: nowrap;
+}

@@ -1,0 +1,444 @@
+.page {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+  overflow: hidden;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  flex: none;
+}
+.page-head h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  /* La couleur du thème : le titre est le premier repère de la page,
+     et il porte l'apparence choisie. Le noir en dur imposait trois
+     règles — une par mode — et ignorait la palette. */
+  color: var(--accent);
+}
+
+.page-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+.btn {
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.btn.primary { background: var(--accent); color: var(--accent-text); font-weight: 700; }
+.btn.ghost { border: 1px solid var(--border); background: var(--surface); }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* La carte s'arrête après la dernière ligne au lieu de s'étirer sur
+   toute la hauteur : avec trois produits, un cadre vide descendait
+   jusqu'en bas de l'écran sans jamais se refermer.
+
+   `flex: 0 1 auto` lui donne la hauteur de son contenu, et la limite à
+   l'espace disponible quand la liste est longue. */
+.table-wrap {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+  border-radius: var(--r-lg);
+}
+
+/* La dernière ligne n'a pas de trait sous elle : la bordure de la
+   carte le fait déjà. */
+.table tbody tr:last-child td { border-bottom: 0; }
+
+/* Les coins du tableau épousent ceux de la carte. */
+.table thead th:first-child { border-top-left-radius: var(--r-lg); }
+.table thead th:last-child { border-top-right-radius: var(--r-lg); }
+.table tbody tr:last-child td:first-child { border-bottom-left-radius: var(--r-lg); }
+.table tbody tr:last-child td:last-child { border-bottom-right-radius: var(--r-lg); }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  /* Même bandeau coloré que dans l'historique : le gris sur blanc se
+     confondait avec les lignes et ne marquait pas le début du
+     tableau. */
+  background: var(--accent);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-text);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr:hover { background: var(--surface-2); }
+
+/* Nom et complément sur la même ligne : empilés, chaque produit occupait
+   deux lignes alors que la colonne a la place. */
+.table td b { font-weight: 600; }
+.table td > b { text-transform: uppercase; }
+.cat-inline, .cat-row-body b { text-transform: uppercase; }
+.table td small {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-left: 8px;
+}
+
+/* Une seule taille dans les tableaux, comme dans l'historique. */
+.table { font-size: 13px; }
+.table td { white-space: nowrap; }
+.table td b, .table td small, .cat-inline, .sold { font-size: 13px; }
+.cat-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.dimmed { color: var(--text-dim); }
+.sold {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+/* Les boutons d'action portent une icône : le fond rond doit suivre. */
+.icon {
+  display: inline-grid;
+  place-items: center;
+}
+.icon svg { display: block; }
+
+/* Tout s'aligne à gauche : une valeur calée à droite oblige l'œil
+   à chercher où elle commence en descendant la colonne. */
+.table .r { text-align: left; }
+.table .c { text-align: center; }
+.table .nowrap { white-space: nowrap; }
+.table .mono { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-dim); }
+.table .pick { width: 38px; }
+.table .pick input { width: 17px; height: 17px; min-height: 0; padding: 0; accent-color: var(--accent); }
+
+.table .empty { text-align: center; color: var(--text-dim); padding: 40px 0; }
+
+.row-low { background: rgba(217, 155, 31, .05); }
+.row-out { background: rgba(217, 64, 64, .05); }
+
+.pill {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill.ok { background: var(--accent-soft); color: var(--ok); }
+.pill.warn { background: rgba(217, 155, 31, .14); color: var(--warn); }
+.pill.danger { background: rgba(217, 64, 64, .12); color: var(--danger); }
+.pill.dim { background: var(--surface-2); color: var(--text-dim); }
+
+.icon {
+  width: 30px; height: 30px;
+  display: inline-grid; place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 14px;
+  margin-left: 4px;
+}
+.icon:hover { background: var(--accent-soft); color: var(--accent); }
+
+.dlg-note {
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+.dlg-preview {
+  margin: 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-dim);
+}
+.dlg-preview b { font-size: 19px; color: var(--accent); font-weight: 800; }
+
+/* Sur téléphone, un tableau devient une liste de cartes : les colonnes
+   ne tiennent pas, et le défilement horizontal rend la lecture pénible. */
+@media (max-width: 720px) {
+  .page { padding: 10px; }
+  .page-head h1 { font-size: 19px; }
+  .page-tools { width: 100%; }
+  .page-tools .search { flex: 1; }
+
+  .table thead { display: none; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table tr {
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    position: relative;
+  }
+  .table td {
+    border: 0;
+    padding: 3px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    white-space: normal;
+  }
+  .table td small { margin-left: 0; }
+  .table td.r, .table td.c { text-align: left; }
+  .table .pick { position: absolute; top: 10px; right: 10px; width: auto; }
+  .table .empty { border: 0; }
+}
+
+/* ---- Onglets secondaires, à l'intérieur d'une page ---- */
+
+.sub-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.sub-tabs::-webkit-scrollbar { display: none; }
+
+/* Trop d'onglets pour la largeur : la barre défile depuis la gauche.
+   Centrée, elle aurait coupé les premiers onglets hors de l'écran, sans
+   moyen de les atteindre. */
+@media (max-width: 1100px) {
+  .sub-tabs { justify-content: flex-start; }
+}
+.sub-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.sub-tabs button svg { flex: none; display: block; }
+.sub-tabs button { flex: none; }
+.sub-tabs button:hover { border-color: var(--text-dim); }
+.sub-tabs button.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ---- Actions en toutes lettres dans les tableaux ---- */
+
+.act {
+  padding: 6px 13px;
+  margin-left: 5px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.act:hover { border-color: var(--text-dim); }
+.act.primary {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.act.danger { border-color: transparent; color: var(--danger); }
+.act.danger:hover { border-color: var(--danger); background: rgba(194, 42, 42, .07); }
+
+/* ---- Barre de filtres ---- */
+
+.filters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  flex-wrap: wrap;
+}
+/* Chaque liste garde une largeur fixe : sans cela, elles s'étirent
+   différemment selon le libellé choisi et la barre saute. */
+.filters .sel { width: 200px; flex: none; }
+.filters .btn { padding: 9px 16px; }
+.filters-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .filters .sel { width: 100%; }
+}
+
+/* Entrées et sorties d'un produit : ce que quelqu'un a ajouté ou retiré
+   à la main, ventes exclues. Deux chiffres côte à côte suffisent à voir
+   si un stock a bougé sans raison. */
+/* Entrées et sorties occupent chacune leur colonne, sous leur propre
+   titre : réunies dans une seule cellule, les deux chiffres se
+   lisaient comme une seule valeur. */
+/* Chaque sens dans sa pastille : côte à côte sans fond, « +12 −3 » se
+   lisait comme un seul nombre. */
+.mv-in, .mv-out {
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  font-weight: 800;
+  font-size: 12px;
+}
+.mv-in { color: var(--ok); background: var(--accent-soft); }
+.mv-out { color: var(--danger); background: rgba(194, 42, 42, .10); }
+
+/* ---- Champ de recherche, commun à la caisse et au stock ---- */
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 300px;
+  flex: 1;
+}
+.search > svg {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+  z-index: 1;
+}
+.search input {
+  padding-left: 40px;
+  background: var(--surface-2);
+  border-color: transparent;
+}
+.search .clear {
+  position: absolute;
+  right: 10px;
+  color: var(--text-dim);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px;
+}
+
+
+/* ---- Séparateurs de colonnes ----
+
+   Même technique que dans l'historique : le trait est peint en fond de
+   cellule, non en bordure. Une bordure se fait recouvrir par le fond
+   alterné des lignes, qui est peint après elle ; un fond de cellule,
+   lui, reste visible. */
+
+.table th + th,
+.table td + td {
+  background-image: linear-gradient(var(--border), var(--border));
+  background-size: 1.5px 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+/* L'en-tête est sur fond coloré : ce fond doit être reposé ici,
+   puisque la règle des traits de séparation le remplace. Sans cela,
+   seule la première colonne restait verte et le texte blanc des
+   autres devenait invisible sur blanc.
+   Le trait, lui, passe en clair : sur le vert, un gris de bordure ne
+   se verrait pas. */
+.table thead th + th {
+  background-color: var(--accent);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--accent-text) 35%, transparent),
+    color-mix(in srgb, var(--accent-text) 35%, transparent));
+}
+
+@media (max-width: 720px) {
+  /* Empilées, les cellules n'ont plus de voisine à leur gauche. */
+  .table td + td { background-image: none; }
+}
+
+/* Chaque cellule commence à gauche, en-têtes compris. */
+.table th,
+.table td {
+  text-align: left;
+}
+
+/* ---- Ligne de résumé des dépenses ----
+
+   Les totaux à gauche, les exports à droite : la barre d'outils du haut
+   porte déjà le filtre de période et deux boutons, trois de plus la
+   feraient déborder. */
+
+.exp-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: none;
+  flex-wrap: wrap;
+}
+.exp-summary .kpis { flex: 1; min-width: 260px; }
+.exp-summary .exports { margin-left: 0; }
+
+@media (max-width: 720px) {
+  .exp-summary { justify-content: center; }
+  .exp-summary .kpis { min-width: 0; width: 100%; }
+}
+
+/* Outils de l'onglet Ventes : la recherche et le choix de période
+   tiennent sur une seule ligne. La recherche cède la place — c'est
+   elle qui peut rétrécir, les boutons de période ont une largeur
+   imposée par leurs libellés. */
+.stock-tools {
+  flex-wrap: nowrap;
+  min-width: 0;
+  /* Le champ de recherche est plus haut que les boutons de période :
+     sans cet alignement, ils se posaient sur le haut de la ligne et
+     paraissaient décalés l'un par rapport à l'autre. */
+  align-items: center;
+}
+.stock-tools .search {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+.stock-tools .period { flex: none; }
+
+/* Place réservée pendant la lecture des données : le tableau garde sa
+   hauteur au lieu que la page se replie puis se redéploie quand les
+   lignes arrivent. */
+.table-attente { min-height: 320px; }
